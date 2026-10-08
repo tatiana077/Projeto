@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Cadastrar Livro - Kerolê</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <h1>Kerolê 📚</h1>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="cadastro.html">Cadastrar Livro</a></li>
+        <li><a href="login.html">Login</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section id="cadastro">
+      <h2>Cadastrar Livro</h2>
+      <form id="formLivro">
+        <input type="text" id="titulo" placeholder="Título do livro" required>
+        <input type="text" id="autor" placeholder="Autor" required>
+        <input type="file" id="foto" accept="image/*" required>
+        <input type="text" id="dono" placeholder="Nome do dono" required>
+        <input type="text" id="contato" placeholder="Contato do dono" required>
+        <input type="number" id="valor" placeholder="Valor em caso de não devolução" required>
+        <button type="submit">Adicionar</button>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 Kerolê - Comunidade de Gurupi-TO</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kerolê - Plataforma Comunitária de Livros</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Fonte Roboto e Ícones FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Leaflet CSS para o Mapa -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+
+  <!-- Cabeçalho Principal -->
+  <header class="header">
+    <div class="logo-container">
+      <i class="fa-solid fa-book-bookmark logo-icon"></i>
+      <span class="logo-text">Kerolê</span>
+    </div>
+    <nav class="nav-links">
+      <button class="nav-btn active" onclick="switchTab('inicio')">Início</button>
+      <button class="nav-btn" onclick="switchTab('cadastrar')">Cadastrar Livro</button>
+      <button class="nav-btn" onclick="switchTab('mapa')">Mapa de Leitores</button>
+      <button class="nav-btn" onclick="switchTab('chat')">Conversas</button>
+      <button class="nav-btn btn-auth" onclick="switchTab('login')">Entrar</button>
+    </nav>
+  </header>
+
+  <!-- Conteúdo Principal Dinâmico -->
+  <main class="main-content">
+
+    <!-- TELA 1: INÍCIO (MARKETPLACE DE LIVROS) -->
+    <section id="tab-inicio" class="tab-content active">
+      <div class="search-bar-container">
+        <h2>Livros Disponíveis</h2>
+        <div class="search-input-group">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="searchInput" placeholder="Pesquisar livros por título, autor ou dono..." onkeyup="filterBooks()">
+          <button class="btn-filter">Filtro</button>
+        </div>
+      </div>
+
+      <div class="books-grid" id="booksGrid">
+        <!-- Cards de livros injetados via JS -->
+      </div>
+    </section>
+
+    <!-- TELA 2: DETALHES DO LIVRO -->
+    <section id="tab-detalhes" class="tab-content">
+      <button class="btn-back" onclick="switchTab('inicio')"><i class="fa-solid fa-arrow-left"></i> Voltar para início</button>
+      
+      <div class="book-detail-card">
+        <div class="detail-cover-container">
+          <img id="detailImg" src="" alt="Capa do Livro">
+        </div>
+        <div class="detail-info-container">
+          <h1 id="detailTitle">Título do Livro</h1>
+          <p class="detail-author" id="detailAuthor">Autor do Livro</p>
+          
+          <div class="synopsis-box">
+            <h3>Sinopse</h3>
+            <p id="detailSynopsis">Carregando sinopse...</p>
+          </div>
+
+          <div class="detail-meta-grid">
+            <div class="meta-card">
+              <h4>Proprietário</h4>
+              <div class="owner-info">
+                <i class="fa-solid fa-circle-user owner-avatar"></i>
+                <div>
+                  <strong id="detailOwner">Nome do Dono</strong>
+                  <p id="detailLocation">Gurupi - TO</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="meta-card highlight">
+              <h4>Detalhes da Devolução</h4>
+              <div class="price-tag" id="detailDeposit">R$ 80,00</div>
+              <small>Valor em caso de não devolução</small>
+            </div>
+          </div>
+
+          <button class="btn-primary-action" onclick="solicitarLivro()"><i class="fa-solid fa-hand-holding-hand"></i> Quero Ler</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TELA 3: MAPA DE LEITORES PRÓXIMOS -->
+    <section id="tab-mapa" class="tab-content">
+      <div class="map-header">
+        <h2>Livros e Leitores Próximos de Você</h2>
+        <p>Gurupi - Tocantins</p>
+      </div>
+      <div id="map"></div>
+    </section>
+
+    <!-- TELA 4: CONVERSAS E CHAT -->
+    <section id="tab-chat" class="tab-content">
+      <div class="chat-container">
+        <!-- Lista de Conversas -->
+        <div class="chat-sidebar">
+          <h3>Conversas Ativas</h3>
+          <ul class="chat-list">
+            <li class="chat-item active" onclick="openChat('Maria Silva')">
+              <i class="fa-solid fa-circle-user avatar"></i>
+              <div class="chat-item-info">
+                <strong>Maria Silva</strong>
+                <p>Combino a entrega no centro?</p>
+              </div>
+            </li>
+            <li class="chat-item" onclick="openChat('João Pedro')">
+              <i class="fa-solid fa-circle-user avatar"></i>
+              <div class="chat-item-info">
+                <strong>João Pedro</strong>
+                <p>O livro Dom Casmurro está disponível?</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Janela de Mensagens -->
+        <div class="chat-main">
+          <div class="chat-header">
+            <i class="fa-solid fa-circle-user avatar"></i>
+            <h4 id="chatActiveUser">Maria Silva</h4>
+          </div>
+          <div class="chat-messages" id="chatMessages">
+            <div class="message received">Oi, tudo bem? Você ainda tem o livro A Fúria dos Reis?</div>
+            <div class="message sent">Olá! Tenho sim, está disponível para empréstimo.</div>
+            <div class="message received">Ótimo! Como podemos combinar a retirada em Gurupi?</div>
+          </div>
+          <div class="chat-input-area">
+            <input type="text" id="chatInput" placeholder="Digite sua mensagem...">
+            <button onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i> Enviar</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TELA 5: LOGIN / CADASTRO -->
+    <section id="tab-login" class="tab-content">
+      <div class="auth-wrapper">
+        <div class="auth-card">
+          <h2>KEROLÊ</h2>
+          <div class="auth-illustration">
+            <i class="fa-solid fa-people-arrows"></i>
+          </div>
+          <p class="auth-subtitle">Rede Comunitária de Empréstimo de Livros</p>
+
+          <form onsubmit="handleLogin(event)">
+            <div class="form-group">
+              <label>E-mail</label>
+              <input type="email" placeholder="seuemail@exemplo.com" required>
+            </div>
+            <div class="form-group">
+              <label>Senha</label>
+              <input type="password" placeholder="Palavra-passe" required>
+            </div>
+            <button type="submit" class="btn-submit">Entrar</button>
+          </form>
+
+          <p class="auth-switch">Não tem conta? <a href="#" onclick="alert('Tela de cadastro ativada!')">Cadastre-se</a></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TELA 6: CADASTRAR LIVRO -->
+    <section id="tab-cadastrar" class="tab-content">
+      <div class="form-container">
+        <h2>Cadastrar Novo Livro para Empréstimo</h2>
+        <form onsubmit="handleBookSubmit(event)">
+          <div class="form-group">
+            <label>Título do Livro</label>
+            <input type="text" id="newTitle" required>
+          </div>
+          <div class="form-group">
+            <label>Autor</label>
+            <input type="text" id="newAuthor" required>
+          </div>
+          <div class="form-group">
+            <label>Valor de Garantia (Caso não haja devolução)</label>
+            <input type="text" id="newDeposit" placeholder="R$ 50,00" required>
+          </div>
+          <button type="submit" class="btn-submit">Cadastrar Livro</button>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Rodapé -->
+  <footer class="footer">
+    <p>&copy; 2026 Kerolê - Comunidade de Gurupi-TO</p>
+  </footer>
+
+  <!-- Leaflet JS para o mapa -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
