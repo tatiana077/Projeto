@@ -5,44 +5,46 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kerolê - Plataforma Comunitária de Livros</title>
   <link rel="stylesheet" href="style.css">
-  <!-- Fonte Roboto e Ícones FontAwesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Leaflet CSS para o Mapa -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
 
   <!-- Cabeçalho Principal -->
   <header class="header">
-    <div class="logo-container">
+    <div class="logo-container" onclick="switchTab('inicio')">
       <i class="fa-solid fa-book-bookmark logo-icon"></i>
       <span class="logo-text">Kerolê</span>
     </div>
     <nav class="nav-links">
-      <button class="nav-btn active" onclick="switchTab('inicio')">Início</button>
-      <button class="nav-btn" onclick="switchTab('cadastrar')">Cadastrar Livro</button>
-      <button class="nav-btn" onclick="switchTab('mapa')">Mapa de Leitores</button>
-      <button class="nav-btn" onclick="switchTab('chat')">Conversas</button>
-      <button class="nav-btn btn-auth" onclick="switchTab('login')">Entrar</button>
+      <button class="nav-btn active" id="nav-inicio" onclick="switchTab('inicio')">Início</button>
+      <button class="nav-btn" id="nav-cadastrar" onclick="switchTab('cadastrar')">Cadastrar Livro</button>
+      <button class="nav-btn" id="nav-mapa" onclick="switchTab('mapa')">Mapa de Leitores</button>
+      <button class="nav-btn" id="nav-chat" onclick="switchTab('chat')">Conversas</button>
+      <button class="nav-btn btn-auth" id="nav-login" onclick="switchTab('login')">Entrar</button>
     </nav>
   </header>
 
-  <!-- Conteúdo Principal Dinâmico -->
   <main class="main-content">
 
-    <!-- TELA 1: INÍCIO (MARKETPLACE DE LIVROS) -->
+    <!-- TELA 1: INÍCIO (MARKETPLACE DE LIVROS COM PAGINAÇÃO) -->
     <section id="tab-inicio" class="tab-content active">
       <div class="search-bar-container">
         <h2>Livros Disponíveis</h2>
         <div class="search-input-group">
           <i class="fa-solid fa-magnifying-glass"></i>
-          <input type="text" id="searchInput" placeholder="Pesquisar livros por título, autor ou dono..." onkeyup="filterBooks()">
+          <input type="text" id="searchInput" placeholder="Pesquisar por título, autor ou proprietário..." onkeyup="filterBooks()">
           <button class="btn-filter">Filtro</button>
         </div>
       </div>
 
       <div class="books-grid" id="booksGrid">
-        <!-- Cards de livros injetados via JS -->
+        <!-- Injetado dinamicamente via JS -->
+      </div>
+
+      <!-- Sistema de Paginação -->
+      <div class="pagination-container" id="pagination">
+        <!-- Injetado via JS -->
       </div>
     </section>
 
@@ -51,26 +53,34 @@
       <button class="btn-back" onclick="switchTab('inicio')"><i class="fa-solid fa-arrow-left"></i> Voltar para início</button>
       
       <div class="book-detail-card">
-        <div class="detail-cover-container">
-          <img id="detailImg" src="" alt="Capa do Livro">
+        <div class="detail-gallery">
+          <div class="main-image-box">
+            <img id="detailImgMain" src="" alt="Foto principal do livro">
+          </div>
+          <h4>Fotos Reais do Produto</h4>
+          <div class="thumbnails-grid" id="detailThumbnails">
+            <!-- Miniaturas injetadas via JS -->
+          </div>
         </div>
+
         <div class="detail-info-container">
           <h1 id="detailTitle">Título do Livro</h1>
           <p class="detail-author" id="detailAuthor">Autor do Livro</p>
           
           <div class="synopsis-box">
-            <h3>Sinopse</h3>
-            <p id="detailSynopsis">Carregando sinopse...</p>
+            <h3>Sinopse & Estado de Conservação</h3>
+            <p id="detailSynopsis">Carregando...</p>
           </div>
 
           <div class="detail-meta-grid">
-            <div class="meta-card">
-              <h4>Proprietário</h4>
+            <div class="meta-card owner-card-clickable" onclick="viewOwnerProfile()">
+              <h4>Proprietário <i class="fa-solid fa-chevron-right icon-arrow"></i></h4>
               <div class="owner-info">
                 <i class="fa-solid fa-circle-user owner-avatar"></i>
                 <div>
                   <strong id="detailOwner">Nome do Dono</strong>
                   <p id="detailLocation">Gurupi - TO</p>
+                  <span class="profile-link-label">Ver perfil completo</span>
                 </div>
               </div>
             </div>
@@ -82,54 +92,60 @@
             </div>
           </div>
 
-          <button class="btn-primary-action" onclick="solicitarLivro()"><i class="fa-solid fa-hand-holding-hand"></i> Quero Ler</button>
+          <button class="btn-primary-action" onclick="solicitarEIniciarChat()"><i class="fa-solid fa-comments"></i> Quero Ler (Abrir Chat)</button>
         </div>
       </div>
     </section>
 
-    <!-- TELA 3: MAPA DE LEITORES PRÓXIMOS -->
+    <!-- TELA 3: PERFIL DO PROPRIETÁRIO -->
+    <section id="tab-perfil" class="tab-content">
+      <button class="btn-back" onclick="switchTab('detalhes')"><i class="fa-solid fa-arrow-left"></i> Voltar ao livro</button>
+      
+      <div class="profile-card">
+        <div class="profile-header">
+          <i class="fa-solid fa-circle-user profile-avatar"></i>
+          <div>
+            <h2 id="profileName">Nome do Usuário</h2>
+            <p><i class="fa-solid fa-location-dot"></i> <span id="profileCity">Gurupi - TO</span></p>
+            <p class="profile-bio" id="profileBio">Membro da comunidade Kerolê. Leitor assíduo e participante do projeto de incentivo à leitura local.</p>
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <h3>Livros Disponíveis deste Proprietário</h3>
+        <div class="books-grid" id="profileBooksGrid" style="margin-top: 15px;">
+          <!-- Livros do proprietário -->
+        </div>
+      </div>
+    </section>
+
+    <!-- TELA 4: MAPA DE LEITORES -->
     <section id="tab-mapa" class="tab-content">
       <div class="map-header">
         <h2>Livros e Leitores Próximos de Você</h2>
-        <p>Gurupi - Tocantins</p>
+        <p>Mapeamento comunitário na cidade de Gurupi - TO</p>
       </div>
       <div id="map"></div>
     </section>
 
-    <!-- TELA 4: CONVERSAS E CHAT -->
+    <!-- TELA 5: CONVERSAS / CHAT -->
     <section id="tab-chat" class="tab-content">
       <div class="chat-container">
-        <!-- Lista de Conversas -->
         <div class="chat-sidebar">
           <h3>Conversas Ativas</h3>
-          <ul class="chat-list">
-            <li class="chat-item active" onclick="openChat('Maria Silva')">
-              <i class="fa-solid fa-circle-user avatar"></i>
-              <div class="chat-item-info">
-                <strong>Maria Silva</strong>
-                <p>Combino a entrega no centro?</p>
-              </div>
-            </li>
-            <li class="chat-item" onclick="openChat('João Pedro')">
-              <i class="fa-solid fa-circle-user avatar"></i>
-              <div class="chat-item-info">
-                <strong>João Pedro</strong>
-                <p>O livro Dom Casmurro está disponível?</p>
-              </div>
-            </li>
+          <ul class="chat-list" id="chatList">
+            <!-- Lista de conversas injetada via JS -->
           </ul>
         </div>
 
-        <!-- Janela de Mensagens -->
         <div class="chat-main">
           <div class="chat-header">
             <i class="fa-solid fa-circle-user avatar"></i>
-            <h4 id="chatActiveUser">Maria Silva</h4>
+            <h4 id="chatActiveUser">Selecione uma conversa</h4>
           </div>
           <div class="chat-messages" id="chatMessages">
-            <div class="message received">Oi, tudo bem? Você ainda tem o livro A Fúria dos Reis?</div>
-            <div class="message sent">Olá! Tenho sim, está disponível para empréstimo.</div>
-            <div class="message received">Ótimo! Como podemos combinar a retirada em Gurupi?</div>
+            <div class="message system-msg">Selecione uma conversa ao lado ou clique em "Quero Ler" em um livro para abrir o chat diretamente.</div>
           </div>
           <div class="chat-input-area">
             <input type="text" id="chatInput" placeholder="Digite sua mensagem...">
@@ -139,13 +155,13 @@
       </div>
     </section>
 
-    <!-- TELA 5: LOGIN / CADASTRO -->
+    <!-- TELA 6: LOGIN -->
     <section id="tab-login" class="tab-content">
       <div class="auth-wrapper">
         <div class="auth-card">
           <h2>KEROLÊ</h2>
           <div class="auth-illustration">
-            <i class="fa-solid fa-people-arrows"></i>
+            <i class="fa-solid fa-book-open-reader"></i>
           </div>
           <p class="auth-subtitle">Rede Comunitária de Empréstimo de Livros</p>
 
@@ -157,45 +173,93 @@
             <div class="form-group">
               <label>Senha</label>
               <input type="password" placeholder="Palavra-passe" required>
+              <div class="forgot-password-container">
+                <a href="#" onclick="alert('Instruções de recuperação de senha enviadas!')" class="forgot-password-link">Esqueceu a senha?</a>
+              </div>
             </div>
             <button type="submit" class="btn-submit">Entrar</button>
           </form>
 
-          <p class="auth-switch">Não tem conta? <a href="#" onclick="alert('Tela de cadastro ativada!')">Cadastre-se</a></p>
+          <p class="auth-switch">Não tem conta? <a href="#" onclick="switchTab('login')">Cadastre-se</a></p>
         </div>
       </div>
     </section>
 
-    <!-- TELA 6: CADASTRAR LIVRO -->
+    <!-- TELA 7: CADASTRAR LIVRO -->
     <section id="tab-cadastrar" class="tab-content">
-      <div class="form-container">
-        <h2>Cadastrar Novo Livro para Empréstimo</h2>
-        <form onsubmit="handleBookSubmit(event)">
-          <div class="form-group">
-            <label>Título do Livro</label>
-            <input type="text" id="newTitle" required>
+      <div class="marketplace-container">
+        <div class="banner-side">
+          <div class="banner-content">
+            <h1>Conecte Leitores. <br>Compartilhe Conhecimento.</h1>
+            <p>Disponibilize seus livros para empréstimo ou doação e ajude a comunidade acadêmica do Kerolê.</p>
           </div>
-          <div class="form-group">
-            <label>Autor</label>
-            <input type="text" id="newAuthor" required>
+          <div class="banner-footer">
+            <i class="fa-solid fa-book-open-reader"></i>
+            <span>Projeto de Extensão Kerolê</span>
           </div>
-          <div class="form-group">
-            <label>Valor de Garantia (Caso não haja devolução)</label>
-            <input type="text" id="newDeposit" placeholder="R$ 50,00" required>
+        </div>
+
+        <div class="form-side">
+          <div class="form-header">
+            <h2>Cadastrar Novo Livro</h2>
+            <p>Preencha as informações do livro para disponibilizá-lo na plataforma.</p>
           </div>
-          <button type="submit" class="btn-submit">Cadastrar Livro</button>
-        </form>
+
+          <form id="bookForm" onsubmit="handleBookSubmit(event)" class="form-grid">
+            
+            <!-- Seleção e Prévia de Capa -->
+            <div class="photo-upload-section">
+              <label class="photo-upload-label">Capa e Fotos do Livro</label>
+              <div class="photo-grid">
+                <label class="upload-box" id="uploadBox">
+                  <i class="fa-solid fa-camera"></i>
+                  <span>Escolher Capa</span>
+                  <input type="file" id="coverInput" accept="image/*" style="display: none;" onchange="previewBookCover(event)">
+                </label>
+                
+                <div class="photo-preview" id="coverPreviewBox" style="display: none; overflow: hidden; border-radius: 8px;">
+                  <img id="coverPreviewImg" src="" alt="Prévia da Capa" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="newTitle"><i class="fa-solid fa-book"></i> Título do Livro</label>
+              <input type="text" id="newTitle" placeholder="Ex: Dom Casmurro" required>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="newAuthor"><i class="fa-solid fa-user-pen"></i> Autor</label>
+                <input type="text" id="newAuthor" placeholder="Ex: Machado de Assis" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="newDeposit"><i class="fa-solid fa-shield-halved"></i> Valor de Garantia</label>
+                <input type="text" id="newDeposit" placeholder="R$ 50,00" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="newSynopsis"><i class="fa-solid fa-align-left"></i> Descrição / Estado do Livro</label>
+              <textarea id="newSynopsis" rows="3" placeholder="Descreva brevemente o estado do livro ou regras para empréstimo..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit">
+              <i class="fa-solid fa-plus-circle"></i>
+              Cadastrar Livro no Kerolê
+            </button>
+          </form>
+        </div>
       </div>
     </section>
 
   </main>
 
-  <!-- Rodapé -->
   <footer class="footer">
     <p>&copy; 2026 Kerolê - Comunidade de Gurupi-TO</p>
   </footer>
 
-  <!-- Leaflet JS para o mapa -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="script.js"></script>
 </body>
