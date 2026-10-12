@@ -17,12 +17,16 @@
       <span class="logo-text">Kerolê</span>
     </div>
     <nav class="nav-links">
-      <button class="nav-btn active" id="nav-inicio" onclick="switchTab('inicio')">Início</button>
-      <button class="nav-btn" id="nav-cadastrar" onclick="switchTab('cadastrar')">Cadastrar Livro</button>
-      <button class="nav-btn" id="nav-mapa" onclick="switchTab('mapa')">Mapa de Leitores</button>
-      <button class="nav-btn" id="nav-chat" onclick="switchTab('chat')">Conversas</button>
-      <button class="nav-btn btn-auth" id="nav-login" onclick="switchTab('login')">Entrar</button>
-    </nav>
+  <button class="nav-btn active" id="nav-inicio" onclick="switchTab('inicio')">Início</button>
+  <button class="nav-btn" id="nav-cadastrar" onclick="switchTab('cadastrar')">Cadastrar Livro</button>
+  <button class="nav-btn" id="nav-mapa" onclick="switchTab('mapa')">Mapa de Leitores</button>
+  <button class="nav-btn" id="nav-chat" onclick="switchTab('chat')">Conversas</button>
+
+  <!-- Container dinâmico do Login / Perfil -->
+  <div id="userAuthSection" style="display: inline-block;">
+    <button class="nav-btn btn-auth" id="nav-login" onclick="switchTab('login')">Entrar</button>
+  </div>
+</nav>
   </header>
 
   <main class="main-content">

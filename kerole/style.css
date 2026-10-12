@@ -715,7 +715,7 @@ body {
   gap: 12px;
 }
 
-/* Modal de Caução / Garantia */
+/* Modal de Caução / Garantia (Sem !important em display) */
 .modal-overlay {
   position: fixed !important;
   top: 0 !important;
@@ -723,7 +723,7 @@ body {
   width: 100vw !important;
   height: 100vh !important;
   background: rgba(0, 0, 0, 0.6) !important;
-  display: flex !important;
+  display: flex;
   justify-content: center !important;
   align-items: center !important;
   z-index: 9999 !important;

@@ -530,6 +530,7 @@ function solicitarEIniciarChat() {
   }
 }
 
+// Fecha o modal de caução
 function closeDepositModal() {
   const modal = document.getElementById("depositModal");
   if (modal) {
@@ -537,26 +538,34 @@ function closeDepositModal() {
   }
 }
 
-// Confirma o caução e redireciona para o chat
+// Confirma o caução e redireciona para o chat sem duplicar mensagens
 function confirmDepositAndStartChat(e) {
-  e.preventDefault();
+  if (e) e.preventDefault();
+
   closeDepositModal();
 
+  if (!selectedBook) return;
+  
   activeChatUser = selectedBook.owner;
   
   let existingChat = chats.find(c => c.user === activeChatUser);
+  const confirmationText = `Caução no valor de ${selectedBook.deposit} retido com sucesso para o livro "${selectedBook.title}". Podemos combinar a entrega!`;
+
   if (!existingChat) {
     chats.unshift({
       user: activeChatUser,
       messages: [
-        { text: `Olá ${activeChatUser}! Realizei a retenção do caução no valor de ${selectedBook.deposit} para o livro "${selectedBook.title}". Como podemos combinar a entrega?`, type: "sent" }
+        { text: confirmationText, type: "sent" }
       ]
     });
   } else {
-    existingChat.messages.push({
-      text: `Caução de ${selectedBook.deposit} confirmado para o livro "${selectedBook.title}". Podemos combinar a entrega!`,
-      type: "sent"
-    });
+    const lastMsg = existingChat.messages[existingChat.messages.length - 1];
+    if (!lastMsg || lastMsg.text !== confirmationText) {
+      existingChat.messages.push({
+        text: confirmationText,
+        type: "sent"
+      });
+    }
   }
 
   renderChatList();
@@ -642,23 +651,20 @@ function initMap() {
 
 function handleLogin(e) {
   e.preventDefault();
-  switchTab("inicio");
-}
 
-// Prévia de Capa no Cadastro
-function previewBookCover(event) {
-  const file = event.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      selectedCoverDataUrl = e.target.result;
-      const previewBox = document.getElementById("coverPreviewBox");
-      const previewImg = document.getElementById("coverPreviewImg");
-      previewImg.src = selectedCoverDataUrl;
-      previewBox.style.display = "block";
-    };
-    reader.readAsDataURL(file);
+  // Substitui o botão "Entrar" pelo ícone de perfil no canto superior direito
+  const authSection = document.getElementById("userAuthSection");
+  if (authSection) {
+    authSection.innerHTML = `
+      <button class="nav-btn" id="nav-perfil" onclick="switchTab('perfil')" title="Meu Perfil" style="display: flex; align-items: center; gap: 6px;">
+        <i class="fa-solid fa-circle-user" style="font-size: 20px; color: #ffd54f;"></i>
+        <span>Perfil</span>
+      </button>
+    `;
   }
+
+  // Redireciona para a tela inicial
+  switchTab("inicio");
 }
 
 function handleBookSubmit(e) {
