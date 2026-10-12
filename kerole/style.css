@@ -850,3 +850,31 @@ body {
     flex-direction: column;
   }
 }
+
+/* Ajustes para telas de celulares */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    padding: 10px;
+    align-items: center;
+  }
+
+  .nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .nav-btn {
+    font-size: 14px;
+    padding: 6px 12px;
+  }
+
+  /* Garante que containers e imagens não vazem da tela */
+  container, main, section, iframe, img {
+    max-width: 100% !important;
+    box-sizing: border-box;
+  }
+}
