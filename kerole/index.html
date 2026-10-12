@@ -256,6 +256,45 @@
 
   </main>
 
+  <!-- Modal de Caução / Garantia -->
+<div id="depositModal" class="modal-overlay" style="display: none;">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeDepositModal()">&times;</button>
+    <div class="modal-header">
+      <i class="fa-solid fa-shield-halved modal-icon"></i>
+      <h2>Garantia de Empréstimo (Caução)</h2>
+      <p>O valor será retido temporariamente e devolvido integralmente assim que você devolver o livro.</p>
+    </div>
+
+    <div class="modal-book-summary">
+      <strong id="modalBookTitle">Título do Livro</strong>
+      <span id="modalBookDeposit">R$ 0,00</span>
+    </div>
+
+    <form onsubmit="confirmDepositAndStartChat(event)">
+      <div class="payment-methods">
+        <label class="payment-option">
+          <input type="radio" name="payment" value="pix" checked>
+          <span><i class="fa-brands fa-pix"></i> PIX (Reembolso Instântaneo)</span>
+        </label>
+        <label class="payment-option">
+          <input type="radio" name="payment" value="card">
+          <span><i class="fa-solid fa-credit-card"></i> Cartão de Crédito</span>
+        </label>
+      </div>
+
+      <div class="deposit-notice">
+        <i class="fa-solid fa-circle-info"></i>
+        <span>Ao confirmar, o valor ficará seguro na plataforma Kerolê até a devolução do exemplar.</span>
+      </div>
+
+      <button type="submit" class="btn-submit">
+        <i class="fa-solid fa-lock"></i> Confirmar Caução & Abrir Chat
+      </button>
+    </form>
+  </div>
+</div>
+
   <footer class="footer">
     <p>&copy; 2026 Kerolê - Comunidade de Gurupi-TO</p>
   </footer>

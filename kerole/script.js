@@ -517,8 +517,30 @@ function viewOwnerProfile() {
   switchTab("perfil");
 }
 
+// Abre o modal de caução ao clicar em "Quero Ler"
 function solicitarEIniciarChat() {
   if (!selectedBook) return;
+
+  document.getElementById("modalBookTitle").innerText = selectedBook.title;
+  document.getElementById("modalBookDeposit").innerText = selectedBook.deposit;
+  
+  const modal = document.getElementById("depositModal");
+  if (modal) {
+    modal.style.display = "flex";
+  }
+}
+
+function closeDepositModal() {
+  const modal = document.getElementById("depositModal");
+  if (modal) {
+    modal.style.display = "none";
+  }
+}
+
+// Confirma o caução e redireciona para o chat
+function confirmDepositAndStartChat(e) {
+  e.preventDefault();
+  closeDepositModal();
 
   activeChatUser = selectedBook.owner;
   
@@ -527,8 +549,13 @@ function solicitarEIniciarChat() {
     chats.unshift({
       user: activeChatUser,
       messages: [
-        { text: `Olá ${activeChatUser}! Tenho interesse no empréstimo do livro "${selectedBook.title}". Como podemos combinar a retirada?`, type: "sent" }
+        { text: `Olá ${activeChatUser}! Realizei a retenção do caução no valor de ${selectedBook.deposit} para o livro "${selectedBook.title}". Como podemos combinar a entrega?`, type: "sent" }
       ]
+    });
+  } else {
+    existingChat.messages.push({
+      text: `Caução de ${selectedBook.deposit} confirmado para o livro "${selectedBook.title}". Podemos combinar a entrega!`,
+      type: "sent"
     });
   }
 
