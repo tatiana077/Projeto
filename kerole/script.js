@@ -331,7 +331,7 @@ const initialBooks = [
   }
 ];
 
-// Configuração para 10 livros por página (2 linhas de 5)
+// Configuração para 10 livros por página
 let currentPage = 1;
 const booksPerPage = 10;
 let filteredBooks = [...initialBooks];
@@ -362,9 +362,12 @@ let mapInitialized = false;
 document.addEventListener("DOMContentLoaded", () => {
   renderPaginatedBooks();
   renderChatList();
+  
+  // Inicia a aplicação direto na tela de login
+  switchTab("login");
 });
 
-// Alternador de Abas
+// Alternador de Abas Atualizado
 function switchTab(tabId) {
   document.querySelectorAll(".tab-content").forEach(el => el.classList.remove("active"));
   document.querySelectorAll(".nav-btn").forEach(el => el.classList.remove("active"));
@@ -374,10 +377,51 @@ function switchTab(tabId) {
   if (targetTab) targetTab.classList.add("active");
   if (targetNav) targetNav.classList.add("active");
 
+  // Controla a visibilidade dos menus e botões da barra superior
+  const navLinksContainer = document.querySelector(".nav-links");
+  const loginBtn = document.getElementById("nav-login");
+
+  if (navLinksContainer) {
+    if (tabId === 'login') {
+      // Oculta os botões de navegação e o botão "Entrar" do topo na tela de login
+      navLinksContainer.querySelectorAll(".nav-btn").forEach(btn => {
+        if (btn.id !== 'nav-perfil') {
+          btn.style.display = 'none';
+        }
+      });
+      if (loginBtn) loginBtn.style.display = 'none';
+    } else {
+      // Exibe os botões de navegação para as demais telas
+      navLinksContainer.querySelectorAll(".nav-btn").forEach(btn => {
+        btn.style.display = 'inline-block';
+      });
+    }
+  }
+
   if (tabId === 'mapa' && !mapInitialized) {
     initMap();
     mapInitialized = true;
   }
+}
+
+// Manipulação do Login
+function handleLogin(e) {
+  e.preventDefault();
+
+  // Substitui a área de autenticação pelo ícone de perfil no canto superior direito
+  const authSection = document.getElementById("userAuthSection");
+  if (authSection) {
+    authSection.style.display = "inline-block";
+    authSection.innerHTML = `
+      <button class="nav-btn" id="nav-perfil" onclick="switchTab('perfil')" title="Meu Perfil" style="display: flex; align-items: center; gap: 6px;">
+        <i class="fa-solid fa-circle-user" style="font-size: 20px; color: #ffd54f;"></i>
+        <span>Perfil</span>
+      </button>
+    `;
+  }
+
+  // Redireciona para a página inicial e libera o acesso
+  switchTab("inicio");
 }
 
 // Renderizar Grade de Livros com Paginação
@@ -409,7 +453,7 @@ function renderPaginatedBooks() {
   renderPaginationControls();
 }
 
-// Renderizar Botões da Paginação ("Primeira Página" e "Última Página")
+// Renderizar Botões da Paginação
 function renderPaginationControls() {
   const paginationDiv = document.getElementById("pagination");
   paginationDiv.innerHTML = "";
@@ -517,7 +561,7 @@ function viewOwnerProfile() {
   switchTab("perfil");
 }
 
-// Abre o modal de caução ao clicar em "Quero Ler"
+// Abre o modal de caução
 function solicitarEIniciarChat() {
   if (!selectedBook) return;
 
@@ -649,22 +693,20 @@ function initMap() {
   });
 }
 
-function handleLogin(e) {
-  e.preventDefault();
-
-  // Substitui o botão "Entrar" pelo ícone de perfil no canto superior direito
-  const authSection = document.getElementById("userAuthSection");
-  if (authSection) {
-    authSection.innerHTML = `
-      <button class="nav-btn" id="nav-perfil" onclick="switchTab('perfil')" title="Meu Perfil" style="display: flex; align-items: center; gap: 6px;">
-        <i class="fa-solid fa-circle-user" style="font-size: 20px; color: #ffd54f;"></i>
-        <span>Perfil</span>
-      </button>
-    `;
+// Prévia de Capa no Cadastro
+function previewBookCover(event) {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      selectedCoverDataUrl = e.target.result;
+      const previewBox = document.getElementById("coverPreviewBox");
+      const previewImg = document.getElementById("coverPreviewImg");
+      previewImg.src = selectedCoverDataUrl;
+      previewBox.style.display = "block";
+    };
+    reader.readAsDataURL(file);
   }
-
-  // Redireciona para a tela inicial
-  switchTab("inicio");
 }
 
 function handleBookSubmit(e) {
